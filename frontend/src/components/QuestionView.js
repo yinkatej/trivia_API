@@ -22,7 +22,7 @@ class QuestionView extends Component {
 
   getQuestions = () => {
     $.ajax({
-      url: `/questions?page=${this.state.page}`, //TODO: update request URL
+      url: `http://localhost:5000/questions?page=${this.state.page}`, //TODO: update request URL
       type: 'GET',
       success: (result) => {
         this.setState({
@@ -65,7 +65,7 @@ class QuestionView extends Component {
 
   getByCategory = (id) => {
     $.ajax({
-      url: `/categories/${id}/questions`, //TODO: update request URL
+      url: `http://localhost:5000/categories/${id}/questions`, //TODO: update request URL
       type: 'GET',
       success: (result) => {
         this.setState({
@@ -83,29 +83,40 @@ class QuestionView extends Component {
   };
 
   submitSearch = (searchTerm) => {
-    $.ajax({
-      url: `/questions`, //TODO: update request URL
-      type: 'POST',
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify({ searchTerm: searchTerm }),
-      xhrFields: {
-        withCredentials: true,
-      },
-      crossDomain: true,
-      success: (result) => {
-        this.setState({
-          questions: result.questions,
-          totalQuestions: result.total_questions,
-          currentCategory: result.current_category,
-        });
-        return;
-      },
-      error: (error) => {
-        alert('Unable to load questions. Please try your request again');
-        return;
-      },
-    });
+    // $.ajax({
+    //   url: `http://localhost:5000/question?search=${searchTerm}`, //TODO: update request URL
+    //   type: 'GET',
+    //   // dataType: 'json',
+    //   // contentType: 'application/json',
+    //   // data: JSON.stringify({ searchTerm: searchTerm }),
+    //   // xhrFields: {
+    //   //   withCredentials: true,
+    //   // },
+    //   // crossDomain: true,
+    //   success: (result) => {
+    //     this.setState({
+    //       questions: result.questions,
+    //       totalQuestions: result.total_questions,
+    //       currentCategory: result.current_category,
+    //     });
+    //     return;
+    //   },
+    //   error: (error) => {
+    //     alert('Unable to load questions. Please try your request again');
+    //     return;
+    //   },
+    // });
+    const req = {
+      method: 'GET',
+      headers: {'Content-Type': 'applicaton/json'},
+      body: null
+    };
+    fetch(`http://localhost:5000/question?search=${searchTerm}`, req)
+    .then(res=>res.json())
+    .then(data=>this.setState({
+      questions: data.questions,
+      totalQuestions: data.total
+    }))
   };
 
   questionAction = (id) => (action) => {

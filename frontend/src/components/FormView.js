@@ -9,14 +9,14 @@ class FormView extends Component {
       question: '',
       answer: '',
       difficulty: 1,
-      category: 1,
-      categories: {},
+      category: '',
+      categories: []
     };
   }
 
   componentDidMount() {
     $.ajax({
-      url: `/categories`, //TODO: update request URL
+      url: 'http://127.0.0.1:5000/categories', //TODO: update request URL
       type: 'GET',
       success: (result) => {
         this.setState({ categories: result.categories });
@@ -31,30 +31,42 @@ class FormView extends Component {
 
   submitQuestion = (event) => {
     event.preventDefault();
-    $.ajax({
-      url: '/questions', //TODO: update request URL
-      type: 'POST',
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify({
+    // $.ajax({
+    //   url: 'http://127.0.0.1:5000/questions', //TODO: update request URL
+    //   type: 'POST',
+    //   dataType: 'json',
+    //   contentType: 'application/json',
+    //   data: JSON.stringify({
+    //     question: this.state.question,
+    //     answer: this.state.answer,
+    //     difficulty: this.state.difficulty,
+    //     category: this.state.category
+    //   }),
+    //   xhrFields: {
+    //     withCredentials: true,
+    //   },
+    //   crossDomain: true,
+    //   success: (result) => {
+    //     document.getElementById('add-question-form').reset();
+    //     return;
+    //   },
+    //   error: (error) => {
+    //     alert('Unable to add question. Please try your request again');
+    //     return;
+    //   },
+    // });
+    const req = {
+      method : 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
         question: this.state.question,
         answer: this.state.answer,
-        difficulty: this.state.difficulty,
         category: this.state.category,
-      }),
-      xhrFields: {
-        withCredentials: true,
-      },
-      crossDomain: true,
-      success: (result) => {
-        document.getElementById('add-question-form').reset();
-        return;
-      },
-      error: (error) => {
-        alert('Unable to add question. Please try your request again');
-        return;
-      },
-    });
+        difficulty: this.state.difficulty
+      })
+    }
+    fetch('http://127.0.0.1:5000/questions', req).then(res=>res.json())
+    
   };
 
   handleChange = (event) => {
@@ -91,10 +103,10 @@ class FormView extends Component {
           <label>
             Category
             <select name='category' onChange={this.handleChange}>
-              {Object.keys(this.state.categories).map((id) => {
+              {(this.state.categories).map((item) => {
                 return (
-                  <option key={id} value={id}>
-                    {this.state.categories[id]}
+                  <option key={item.id} value={item.type}>
+                    {item.type}
                   </option>
                 );
               })}
